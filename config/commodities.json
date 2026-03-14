@@ -1,0 +1,74 @@
+{
+  "commodities": {
+    "copper": {
+      "name": "Copper",
+      "exchange": "LME",
+      "unit": "tonnes",
+      "futures": {
+        "chris_m1": "CHRIS/CME_HG1",
+        "chris_m2": "CHRIS/CME_HG2",
+        "yfinance": "HG=F"
+      },
+      "lme_metal": "copper",
+      "usgs_commodity": "copper",
+      "category": "metals"
+    },
+    "aluminium": {
+      "name": "Aluminium",
+      "exchange": "LME",
+      "unit": "tonnes",
+      "futures": {
+        "chris_m1": "CHRIS/CME_ALI1",
+        "chris_m2": "CHRIS/CME_ALI2",
+        "yfinance": "ALI=F"
+      },
+      "lme_metal": "aluminium",
+      "usgs_commodity": "aluminum",
+      "category": "metals"
+    },
+    "coffee": {
+      "name": "Coffee Arabica",
+      "exchange": "ICE",
+      "unit": "bags",
+      "futures": {
+        "chris_m1": "CHRIS/ICE_KC1",
+        "chris_m2": "CHRIS/ICE_KC2",
+        "yfinance": "KC=F"
+      },
+      "ice_report_name": "coffee_c",
+      "usda_commodity_code": "0711100",
+      "category": "softs"
+    },
+    "cocoa": {
+      "name": "Cocoa",
+      "exchange": "ICE",
+      "unit": "tonnes",
+      "futures": {
+        "chris_m1": "CHRIS/ICE_CC1",
+        "chris_m2": "CHRIS/ICE_CC2",
+        "yfinance": "CC=F"
+      },
+      "ice_report_name": "cocoa",
+      "usda_commodity_code": "0721100",
+      "category": "softs"
+    },
+    "sugar": {
+      "name": "Sugar #11",
+      "exchange": "ICE",
+      "unit": "short_tons",
+      "futures": {
+        "chris_m1": "CHRIS/ICE_SB1",
+        "chris_m2": "CHRIS/ICE_SB2",
+        "yfinance": "SB=F"
+      },
+      "ice_report_name": "sugar_no_11",
+      "usda_commodity_code": "0612000",
+      "category": "softs"
+    }
+  },
+  "regime_thresholds": {
+    "zscore_tight": -1.0,
+    "zscore_surplus": 1.0,
+    "flat_spread_pct": 0.002
+  }
+}

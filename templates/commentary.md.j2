@@ -1,0 +1,66 @@
+# Cross-Commodity Inventory & Term Structure Report
+**Generated: {{ generated_date }}**
+
+---
+
+## Market Overview
+
+{% for snap in snapshots %}
+### {{ snap.commodity | title }}
+
+| Metric | Value |
+|--------|-------|
+| Latest Date | {{ snap.date or 'N/A' }} |
+| Inventory Z-Score (1Y) | {{ '%.2f' % snap.zscore_1y if snap.zscore_1y is not none else 'N/A' }} |
+| Inventory Z-Score (3Y) | {{ '%.2f' % snap.zscore_3y if snap.zscore_3y is not none else 'N/A' }} |
+| Stocks-to-Use (days) | {{ '%.1f' % snap.stocks_to_use if snap.stocks_to_use is not none else 'N/A' }} |
+| Calendar Spread | {{ '%.4f' % snap.spread if snap.spread is not none else 'N/A' }} |
+| Spread (%) | {{ '%.2f' % (snap.spread_pct * 100) if snap.spread_pct is not none else 'N/A' }}% |
+| Regime | {{ snap.regime or 'N/A' }} |
+| Signal Alignment | {{ snap.signal_alignment or 'N/A' }} |
+| Overall | **{{ snap.overall_regime or 'N/A' }}** |
+
+{% if snap.zscore_1y is not none %}
+{% if snap.zscore_1y < -1.0 %}
+**Assessment:** Inventories are below their 1-year average, suggesting tightening physical supply.
+{% elif snap.zscore_1y > 1.0 %}
+**Assessment:** Inventories are above their 1-year average, indicating ample physical supply.
+{% else %}
+**Assessment:** Inventories are within normal range relative to their 1-year average.
+{% endif %}
+{% if snap.signal_alignment == 'divergent' %}
+⚠ **Divergence detected** — inventory signal and term structure are sending conflicting messages. This may indicate a regime transition or structural shift.
+{% elif snap.signal_alignment == 'aligned' %}
+Inventory levels and term structure are aligned, reinforcing the {{ snap.overall_regime or 'current' }} regime signal.
+{% endif %}
+{% endif %}
+
+{% endfor %}
+
+---
+
+## Cross-Commodity Summary
+
+{% set tight_count = snapshots | selectattr('overall_regime', 'equalto', 'tight') | list | length %}
+{% set surplus_count = snapshots | selectattr('overall_regime', 'equalto', 'surplus') | list | length %}
+{% set divergent_count = snapshots | selectattr('signal_alignment', 'equalto', 'divergent') | list | length %}
+
+- **Tight markets:** {{ tight_count }} of {{ snapshots | length }}
+- **Surplus markets:** {{ surplus_count }} of {{ snapshots | length }}
+- **Divergent signals:** {{ divergent_count }} of {{ snapshots | length }}
+
+{% if divergent_count > 0 %}
+Markets showing divergence between inventory and term structure warrant closer attention — these often precede regime shifts.
+{% endif %}
+
+{% if sensitivity %}
+## Inventory-Spread Sensitivity
+
+| Commodity | β (spread % per z-score) | R² | Significant |
+|-----------|--------------------------|-----|-------------|
+{% for row in sensitivity %}
+| {{ row.commodity | title }} | {{ '%.4f' % row.beta if row.beta is not none else 'N/A' }} | {{ '%.3f' % row.r_squared if row.r_squared is not none else 'N/A' }} | {{ 'Yes' if row.p_value is not none and row.p_value < 0.05 else 'No' }} |
+{% endfor %}
+
+Higher |β| indicates stronger inventory→spread transmission — the physical market's "teeth" in driving the curve.
+{% endif %}
