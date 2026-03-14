@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import sqlite3
 
 import pandas as pd
 
@@ -79,7 +80,7 @@ def classify_signal_alignment(
         return "neutral"
 
 
-def process_spread_analytics(conn, commodity: str) -> int:
+def process_spread_analytics(conn: sqlite3.Connection, commodity: str) -> int:
     """Compute spread metrics and regime for a commodity, write to daily_analytics.
 
     Reads futures prices and existing z-scores from daily_analytics

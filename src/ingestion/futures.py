@@ -7,6 +7,7 @@ can still demonstrate the full methodology.
 from __future__ import annotations
 
 import logging
+import sqlite3
 from datetime import date, timedelta
 
 import numpy as np
@@ -146,7 +147,7 @@ def _generate_synthetic_m2(
     return m2_prices, spreads
 
 
-def backfill_futures(conn, commodity: str) -> int:
+def backfill_futures(conn: sqlite3.Connection, commodity: str) -> int:
     """Fetch futures data, trying CHRIS first then yfinance fallback.
 
     Returns number of rows upserted.

@@ -11,6 +11,8 @@ from src.database import get_connection, init_db, list_commodities
 from src.processing.normaliser import process_inventory_analytics
 from src.processing.spreads import process_spread_analytics
 from src.analysis.storage_economics import StorageEconomicsAnalyser
+import matplotlib.pyplot as plt
+
 from src.reporting.charts import (
     plot_correlation_matrix,
     plot_inventory_spread_dual_axis,
@@ -20,7 +22,7 @@ from src.reporting.charts import (
     plot_zscore_overlay,
 )
 from src.reporting.commentary import generate_commentary
-from src.settings import CHARTS_DIR
+from src.settings import CHARTS_DIR, ROOT_DIR
 
 logging.basicConfig(
     level=logging.INFO,
@@ -68,23 +70,29 @@ def main() -> None:
     CHARTS_DIR.mkdir(parents=True, exist_ok=True)
 
     for commodity in commodities:
-        plot_inventory_spread_dual_axis(
+        fig = plot_inventory_spread_dual_axis(
             conn, commodity, save_path=CHARTS_DIR / f"{commodity}_dual_axis.png"
         )
-        plot_stock_spread_scatter(
+        plt.close(fig)
+        fig = plot_stock_spread_scatter(
             conn, commodity, save_path=CHARTS_DIR / f"{commodity}_scatter.png"
         )
+        plt.close(fig)
 
-    plot_tightness_heatmap(conn, save_path=CHARTS_DIR / "tightness_heatmap.png")
-    plot_sensitivity_bar(conn, save_path=CHARTS_DIR / "sensitivity_bar.png")
-    plot_correlation_matrix(conn, save_path=CHARTS_DIR / "correlation_matrix.png")
-    plot_zscore_overlay(conn, save_path=CHARTS_DIR / "zscore_overlay.png")
+    for chart_fn, name in [
+        (plot_tightness_heatmap, "tightness_heatmap.png"),
+        (plot_sensitivity_bar, "sensitivity_bar.png"),
+        (plot_correlation_matrix, "correlation_matrix.png"),
+        (plot_zscore_overlay, "zscore_overlay.png"),
+    ]:
+        fig = chart_fn(conn, save_path=CHARTS_DIR / name)
+        plt.close(fig)
 
     logger.info("Charts saved to %s", CHARTS_DIR)
 
     # ── Step 4: Commentary ───────────────────────────────────────────────
     logger.info("=== Generating Commentary ===")
-    report_path = Path("reports") / "commentary.md"
+    report_path = ROOT_DIR / "reports" / "commentary.md"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     generate_commentary(conn, output_path=report_path)
 

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import math
 from dataclasses import dataclass
 from typing import Any
 
@@ -25,15 +26,22 @@ class CommoditySnapshot:
     signal_alignment: str | None = None
     overall_regime: str | None = None
 
+    @staticmethod
+    def _clean(val: float | None, decimals: int) -> float | None:
+        """Round a value, converting NaN to None."""
+        if val is None or (isinstance(val, float) and math.isnan(val)):
+            return None
+        return round(val, decimals)
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "commodity": self.commodity,
             "date": self.date,
-            "zscore_1y": round(self.zscore_1y, 2) if self.zscore_1y else None,
-            "zscore_3y": round(self.zscore_3y, 2) if self.zscore_3y else None,
-            "stocks_to_use": round(self.stocks_to_use, 1) if self.stocks_to_use else None,
-            "spread": round(self.spread, 4) if self.spread else None,
-            "spread_pct": round(self.spread_pct, 4) if self.spread_pct else None,
+            "zscore_1y": self._clean(self.zscore_1y, 2),
+            "zscore_3y": self._clean(self.zscore_3y, 2),
+            "stocks_to_use": self._clean(self.stocks_to_use, 1),
+            "spread": self._clean(self.spread, 4),
+            "spread_pct": self._clean(self.spread_pct, 4),
             "regime": self.regime,
             "signal_alignment": self.signal_alignment,
             "overall_regime": self.overall_regime,

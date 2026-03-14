@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import io
 import logging
-import math
+import sqlite3
 from datetime import date, timedelta
 
 import numpy as np
@@ -134,7 +134,7 @@ def _generate_synthetic_stocks(
 
 
 def backfill_lme_stocks(
-    conn,
+    conn: sqlite3.Connection,
     commodity: str,
     start_date: date | None = None,
     end_date: date | None = None,

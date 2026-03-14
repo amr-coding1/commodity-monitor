@@ -364,7 +364,7 @@ def get_consumption_for_commodity(
     year: int | None = None,
 ) -> pd.DataFrame:
     """Return consumption data. If year given, return that year only."""
-    if year:
+    if year is not None:
         query = "SELECT * FROM consumption WHERE commodity = ? AND year = ?"
         return pd.read_sql_query(query, conn, params=[commodity, year])
     query = "SELECT * FROM consumption WHERE commodity = ? ORDER BY year"

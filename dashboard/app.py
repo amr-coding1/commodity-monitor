@@ -48,7 +48,7 @@ ALIGNMENT_COLOUR_MAP = {
 }
 
 
-@st.cache_resource
+@st.cache_resource(ttl=300)
 def get_db():
     conn = get_connection()
     init_db(conn)
@@ -90,7 +90,7 @@ def render_overview(conn):
             "Commodity": d["commodity"].title(),
             "Z-Score (1Y)": d["zscore_1y"],
             "Stocks-to-Use (days)": d["stocks_to_use"],
-            "Spread (%)": round(d["spread_pct"] * 100, 2) if d["spread_pct"] else None,
+            "Spread (%)": round(d["spread_pct"] * 100, 2) if d["spread_pct"] is not None else None,
             "Regime": d["regime"],
             "Alignment": d["signal_alignment"],
             "Overall": d["overall_regime"],

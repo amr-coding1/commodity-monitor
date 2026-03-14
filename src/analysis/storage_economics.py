@@ -135,8 +135,9 @@ def pearson_with_ci(
 
     r, p = stats.pearsonr(x_clean, y_clean)
 
-    # Fisher z-transform for CI
-    z = np.arctanh(r)
+    # Fisher z-transform for CI (clamp to avoid inf at |r|=1)
+    r_clamped = np.clip(r, -0.9999, 0.9999)
+    z = np.arctanh(r_clamped)
     se = 1.0 / np.sqrt(n - 3)
     z_crit = stats.norm.ppf((1 + confidence) / 2)
 

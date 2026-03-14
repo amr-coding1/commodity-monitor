@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import sqlite3
 
 import numpy as np
 import pandas as pd
@@ -59,7 +60,7 @@ def compute_stocks_to_use_days(
     return stock_level / daily_consumption
 
 
-def process_inventory_analytics(conn, commodity: str) -> int:
+def process_inventory_analytics(conn: sqlite3.Connection, commodity: str) -> int:
     """Compute z-scores and stocks-to-use for a commodity, write to daily_analytics.
 
     Returns number of rows written.

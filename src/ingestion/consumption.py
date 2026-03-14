@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import sqlite3
 
 import pandas as pd
 import requests
@@ -99,11 +100,6 @@ def fetch_usgs_minerals(commodity: str) -> pd.DataFrame | None:
         logger.info("No USGS commodity name for %s", commodity)
         return None
 
-    # USGS publishes historical data tables — try the data series URL
-    base_url = (
-        "https://pubs.usgs.gov/periodicals/mcs2025/mcs2025-{name}.pdf"
-    )
-
     # Hardcoded world consumption estimates (USGS MCS 2024 data)
     # These are approximate annual world refined consumption in thousand metric tons
     consumption_data = {
@@ -135,7 +131,7 @@ def fetch_usgs_minerals(commodity: str) -> pd.DataFrame | None:
     return df
 
 
-def backfill_consumption(conn, commodity: str) -> int:
+def backfill_consumption(conn: sqlite3.Connection, commodity: str) -> int:
     """Fetch and store consumption data from appropriate source.
 
     Returns number of rows upserted.

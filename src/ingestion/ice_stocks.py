@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import io
 import logging
+import sqlite3
 import time
 from datetime import date, timedelta
 
@@ -136,7 +137,7 @@ def _generate_synthetic_stocks(
 
 
 def backfill_ice_stocks(
-    conn,
+    conn: sqlite3.Connection,
     commodity: str,
     start_date: date | None = None,
     end_date: date | None = None,

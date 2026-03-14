@@ -1,6 +1,7 @@
 """Shared test fixtures — in-memory database with schema and seed data."""
 from __future__ import annotations
 
+import math
 import sqlite3
 from datetime import date, timedelta
 
@@ -47,7 +48,6 @@ def seeded_db(db):
             if dt.weekday() >= 5:
                 continue
             # Add sinusoidal variation to simulate real inventory cycles
-            import math
             variation = math.sin(i / 40 * math.pi) * base_stock * 0.15
             stock = base_stock + variation + (i * base_stock * 0.0005)
 
