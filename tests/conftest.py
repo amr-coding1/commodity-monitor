@@ -33,8 +33,13 @@ def seeded_db(db):
     ]
     base_date = date(2024, 1, 2)
 
+    # 500 calendar days ≈ 357 trading days → exceeds the 252-day z-score
+    # warmup by ~105 days, enough for walk-forward (≥60) and rolling
+    # correlation (63-day window) to produce valid results.
+    n_days = 500
+
     for commodity, exchange, unit in commodities:
-        # Inventory: 200 days of data with a trend
+        # Inventory: n_days of data with a trend
         base_stock = {
             "copper": 200000,
             "aluminium": 500000,
@@ -43,7 +48,7 @@ def seeded_db(db):
             "sugar": 400000,
         }[commodity]
 
-        for i in range(200):
+        for i in range(n_days):
             dt = base_date + timedelta(days=i)
             if dt.weekday() >= 5:
                 continue
@@ -56,7 +61,7 @@ def seeded_db(db):
                 (str(dt), commodity, exchange, stock, unit),
             )
 
-        # Futures: 200 days of M1 and M2
+        # Futures: n_days of M1 and M2
         base_price = {
             "copper": 8500,
             "aluminium": 2300,
@@ -65,11 +70,10 @@ def seeded_db(db):
             "sugar": 22,
         }[commodity]
 
-        for i in range(200):
+        for i in range(n_days):
             dt = base_date + timedelta(days=i)
             if dt.weekday() >= 5:
                 continue
-            import math
             m1 = base_price + math.sin(i / 30 * math.pi) * base_price * 0.05
             # M2 slightly higher (contango) with periodic flips to backwardation
             contango_flip = -1 if math.sin(i / 60 * math.pi) > 0.5 else 1
